@@ -1,0 +1,301 @@
+<!doctype html>
+
+<!-- Any figures to-be called with <img ...> should be placed in /static and called 
+as with /static as their root. E.g. <img src="/diagrams/fig1.png">
+-->
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="template.v2.js"></script>
+  <title>arXiv/viXra - Introduction - Garrett Goon</title>
+</head>
+
+<body>
+
+  <!-- I added a date field to more easily add the date to the front matter. Removed the DOI file -->
+
+  <d-front-matter>
+    <script type="text/json">
+      {
+        "title": "arXiv/viXra - Introduction",
+        "description": "An example project using Webpack, Babel, and Svelte.",
+        "authors": [
+          {
+            "author": "Garrett Goon",
+            "authorURL": "https://garrettgoon.com",
+            "affiliation": "CMU",
+            "affiliationURL": "https://www.cmu.edu/physics/"
+          }
+        ],
+        "katex": {
+          "delimiters": [
+            {
+              "left": "$",
+              "right": "$",
+              "display": false
+            },
+            {
+              "left": "$$",
+              "right": "$$",
+              "display": true
+            }
+          ]
+        },
+        "date" : "15 December, 2021"
+      }
+  </script>
+  </d-front-matter>
+
+  <d-title>
+    <h1>arXiv/viXra - Introduction</h1>
+    <p>Machine Learning the difference.</p>
+  </d-title>
+
+  <d-article>
+
+    <h3>Which is which?</h3>
+
+    <p>
+      Here are two research paper titles:
+    </p>
+    <blockquote>
+      An Efficient Lattice Algorithm for the Libor Market Model
+    </blockquote>
+    <p>
+      and
+    </p>
+    <blockquote>
+      Atomic Entanglement vs Photonic Visibility for Quantum Criticality of Hybrid System
+    </blockquote>
+
+
+    <p>
+      One example comes from <a target="_blank" rel="noopener noreferrer" href="https://arxiv.org">arXiv</a>
+      and the other from <a target="_blank" rel="noopener noreferrer" href="https://vixra.org">viXra</a>. For the
+      unfamiliar:
+    </p>
+    <ul>
+      <li>arXiv hosts nearly two million papers and is the standard, global repository for fields
+        such as Computer Science, Statistics, Quantitative Finance, Mathematics, and, in particular, Physics, the
+        discipline
+        for which it was originally established. </li>
+      <li>viXra hosts nearly forty thousand papers and was created as an alternative to arXiv for
+        "scientists who find they are unable to
+        submit their articles to arXiv.org because of Cornell University's policy of endorsements and moderation
+        designed to filter out e-prints that they consider inappropriate."</li>
+    </ul>
+    <p>
+      <b>Question:</b> <em>Can you tell which title above came from an arXiv paper and which is from viXra?<d-footnote
+          id="d-footnote-wrong-guesses">I guessed incorrectly for both of these titles, which can be found
+          <a target="_blank" rel="noopener noreferrer" href="https://vixra.org/abs/1906.0481">here</a> and
+          <a target="_blank" rel="noopener noreferrer" href="https://arxiv.org/abs/quant-ph/0702078">here</a>.
+        </d-footnote></em>
+    </p>
+
+
+
+    <figure>
+      <img src="images/results.png" alt="Results from the arXiv/viXra quiz, November 2021.">
+      <figcaption>
+        A screen capture of the global results from <a target="_blank" rel="noopener noreferrer"
+          href="https://garrettgoon.com/arxiv-vixra-quiz/">garrettgoon.com/arxiv-vixra-quiz</a>, taken November 2021.
+      </figcaption>
+    </figure>
+
+
+    <h3>Humans vs. Machines</h3>
+
+    <h4>Humans</h4>
+
+    <p>
+      The general task of determining the source of a given paper from, say, its title or abstract alone is not so easy,
+      particularly
+      for those with little exposure to technical articles.
+    </p>
+
+    <p>
+      At <a target="_blank" rel="noopener noreferrer"
+        href="https://garrettgoon.com/arxiv-vixra-quiz/">garrettgoon.com/arxiv-vixra-quiz</a> I have made a small quiz
+      where you can test your own abilities. As of November 5, 2021 there have been over 25,000 total guesses
+      with the following results:<d-footnote id="d-footnote-experts">
+        Participants are requested to self-identify as experts if they regularly read technical research articles.
+        These experts guessed correctly on <d-math>\approx 78\%</d-math> of the title questions and <d-math>\approx 71\%
+        </d-math> of the abstract questions. Non-experts guessed correctly on <d-math>\approx 71\%</d-math> and
+        <d-math>\approx 66\%</d-math> of these same tasks. Approximately three-fifths of all guesses came from experts.
+      </d-footnote>
+    </p>
+
+    <ul>
+      <li>
+        Having seen the <em>title alone</em>, participants guess the correct source <d-math>\approx 69\%</d-math> of the
+        time.
+      </li>
+      <li>
+        Having seen the <em>abstract alone</em>, participants guess the correct source <d-math>\approx 75\%</d-math> of
+        the time.
+      </li>
+    </ul>
+    <p>Pretty good! A summarizing graphic can also be found above.</p>
+
+    <h4>Machines</h4>
+
+    <p>
+      Surely, however, we can teach a computer to perform better than the human baseline above. This particular task of
+      text classification is one of the classic
+      problems
+      of Machine Learning (ML), falling under the subcategory of Natural Language Processing (NLP).
+    </p>
+
+    <p>
+      In the below series of posts I describe in detail the process of building increasingly sophisticated models
+      designed to solve the
+      preceding
+      classification task<d-footnote id='titles-only'>
+        In order to limit the scope of the project, most of the models focus on the (harder) problem of classifying
+        papers based on <em>title</em> alone.
+      </d-footnote>. In the course of the description, I also attempt to explain various ML and Data Science
+      concepts
+      in my own way, with the hope that others may find the explanations informative.
+    </p>
+
+
+    <h3>Project Posts</h3>
+
+    <ul>
+      <li>
+        <a target="_blank" rel="noopener noreferrer" href="https://garrettgoon.com/arxiv-vixra-data/">The Data</a>
+      </li>
+      <li>
+        <a target='_blank' rel='noopener noreferrer' href='https://garrettgoon.com/arxiv-vixra-workflow/'>Workflow</a>
+      </li>
+      <li>
+        <a target="_blank" rel="noopener noreferrer"
+          href="https://garrettgoon.com/arxiv-vixra-baseline-models/">Baseline Models</a>
+      </li>
+      <li>
+        <a target="_blank" rel="noopener noreferrer" href="https://garrettgoon.com/arxiv-vixra-recurrent/">Recurrent
+          Structures</a>
+      </li>
+      <li>
+        <a target="_blank" rel="noopener noreferrer"
+          href="https://garrettgoon.com/arxiv-vixra-convolutions/">Convolutions</a>
+      </li>
+      <li>
+        Attention (To Come)
+      </li>
+      <li>
+        Transformers (To Come)
+      </li>
+      <li>
+        The Test Set and Conclusions (To Come)
+      </li>
+    </ul>
+
+
+
+
+
+
+  </d-article>
+
+
+
+  <d-appendix>
+
+
+    <h3>Acknowledgments</h3>
+
+    <p>
+      Thank you to <a href="https://distill.pub" target="_blank" rel="noopener noreferrer">the <em>Distill</em> team</a>
+      for making their
+      <a href="https://github.com/distillpub" target="_blank" rel="noopener noreferrer">article template publicly
+        available.</a> I also gratefully
+      acknowledge
+      useful conversations with Matt Gormley, Matt Malloy, Thomas Schaaf, and Rami Vanguri in the course of this
+      project.
+    </p>
+
+
+    <h3>Helpful Links and Resources</h3>
+
+    <p>
+      This project is my first foray into Machine Learning and I have found the following links particularly helpful:
+    </p>
+
+    <ul class="color-dot-ul">
+      <li>
+        <a target='_blank' rel='noopener noreferrer'
+          href='https://www.udacity.com/course/deep-learning-pytorch--ud188'>Udacity's <em>Intro to Deep Learning with
+            PyTorch</em></a> is a decent hands-on introduction to <d-code language='python'>PyTorch</d-code> via canned
+        problems and scaffolded
+        code (some of my notebooks from the course are <a target='_blank' rel='noopener noreferrer'
+          href='https://github.com/garrett361/udacity-dlwpt'>on my Github page</a>), though I found the theory
+        explanations pretty poor.
+      </li>
+      <li>
+        <a target='_blank' rel='noopener noreferrer'
+          href='https://www.manning.com/books/deep-learning-with-pytorch'><em>Deep Learning with PyTorch</em></a> is
+        another good, practical introduction to various facets of
+        <d-code language='python'>PyTorch</d-code> and more general deep-learning concepts.
+      </li>
+      <li>
+        <a target='_blank' rel='noopener noreferrer'
+          href='https://sites.krieger.jhu.edu/jared-kaplan/files/2019/04/ContemporaryMLforPhysicists.pdf'>Jared Kaplan's
+          ML Notes</a> give a relatively succinct introduction to the basics of ML (the target audience being Physics
+        PhDs.)
+      </li>
+      <li>The early sections of <a target='_blank' rel='noopener noreferrer'
+          href='https://www.sciencedirect.com/science/article/pii/S0370157319303072?via%3Dihub'>Fabian Ruehle's <em>Data
+            science applications to string theory</em></a> provide a nice overview of basic concepts.
+      </li>
+      <li>
+        David MacKay's <a target='_blank' rel='noopener noreferrer'
+          href='https://www.inference.org.uk/itprnn/book.pdf'><em>Information Theory, Inference, and Learning
+            Algorithms</em></a> is a fun tour through various topics in
+        information theory and related fields which provides useful background for various ML concepts.
+      </li>
+      <li>
+        Stanford has a variety of useful courses online, in particular <a target='_blank' rel='noopener noreferrer'
+          href='https://www.youtube.com/watch?v=jGwO_UgTS7I&list=PLoROMvodv4rMiGQp3WXShtMGgzqpfVfbU'><em>CS229</em>
+          (Machine Learning) course</a> and the more deep-learning focused <a target='_blank' rel='noopener noreferrer'
+          href='https://www.youtube.com/watch?v=vT1JzLTH4G4&list=PLC1qU-LWwrF64f4QKQT-Vg5Wr4qEE1Zxk'><em>CS231N</em>
+          (Computer
+          Vision)</a> and <a target='_blank' rel='noopener noreferrer'
+          href='https://www.youtube.com/playlist?list=PLoROMvodv4rOSH4v6133s9LFPRHjEmbmJ'><em>CS224N</em> (Natural
+          Language
+          Processing)</a> courses.
+      </li>
+      <li>
+        Jeremy Howard's <a target='_blank' rel='noopener noreferrer'
+          href='https://www.youtube.com/watch?v=CzdWqFTmn0Y&list=PLfYUBJiXbdtSyktd8A_x0JNd6lxDcZE96'><em>Intro to
+            Machine Learning</em></a> and <a target='_blank' rel='noopener noreferrer'
+          href='https://www.youtube.com/watch?v=_QUEXsHfsA0&list=PLfYUBJiXbdtRL3FMB3GoWHRI8ieU6FhfM'><em>Deep Learning
+            for Coders</em></a> are great fun and much more focused on the practicalities of ML than the Stanford series (the
+        two complement each other well).
+      </li>
+      <li>
+        <a target='_blank' rel='noopener noreferrer' href='https://d2l.ai/'><em>Dive into Deep Learning</em></a> is
+        useful as a quick reference for looking up details of various architectures.
+      </li>
+      <li>
+        <a target='_blank' rel='noopener noreferrer'
+          href='https://www.oreilly.com/library/view/fluent-python-2nd/9781492056348/'>Fluent Python</a> for everything
+        <d-code language='python'>python</d-code>.  A tremendous book.
+      </li>
+    </ul>
+
+    <d-footnote-list></d-footnote-list>
+    <d-citation-list></d-citation-list>
+  </d-appendix>
+
+
+  <!-- bibliography will be inlined during Distill pipeline's pre-rendering
+    (GG: I have not managed to get the bibliography to compile after the ejs
+     is converted to a static html file, so commenting out)
+  <d-bibliography src="bibliography.bib"></d-bibliography>
+
+   -->
+
+
+</body>
