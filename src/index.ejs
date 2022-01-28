@@ -167,8 +167,8 @@ as with /static as their root. E.g. <img src="/diagrams/fig1.png">
         Here's an example: many common computations in ML are paralellized using <em>broadcasting</em> and
         <em>vectorized</em> code. These are some of the most important practices to develop for efficiency.
         Coming from physics, the tensor operations one performs in these calculations are also initially somewhat
-        bizarre looking (at least for me) and take some getting used to. Below I explain broadcasting and other common
-        operations in the way I would have found helpful when initially learning about them.
+        bizarre looking (at least for me) and take some getting used to. Below I explain broadcasting in the way I would
+        have found helpful when initially learning about them.
 
         <br>
         <br>
@@ -204,9 +204,10 @@ as with /static as their root. E.g. <img src="/diagrams/fig1.png">
           \end{pmatrix}\ ,
         </d-math>
         or in component form: <d-math>m_{ij}, v_{k} \longrightarrow \left(m*v\right)_{ij} \equiv m_{ij}v_{j}</d-math>.
-        Because the entries of the <d-math>m*v</d-math> tensor can all be computed independently from each other, it is
-        amenable to parallelization and corresponding vectorized <d-code language='python'>pytorch</d-code> code for the
-        above reads (using random entries instead of the preceding integers):
+        Because the entries of the <d-math>m*v</d-math> tensor can all be computed independently from each other, the
+        calculation is amenable to parallelization and corresponding vectorized
+        <d-code language='python'>pytorch</d-code> code for the
+        above is simply the concise syntax below (using random entries instead of the preceding integers):
         <d-code block='' language='python'>
           m = torch.randn(2, 3) # (2, 3)-shaped.
           v = torch.randn(3) # (3, )-shaped.
@@ -225,9 +226,11 @@ as with /static as their root. E.g. <img src="/diagrams/fig1.png">
         Writing out the sizes of these dimensions in code notation as
         <d-code language='python'>(t_M, ..., t_1, t_0)</d-code> and
         <d-code language='python'>(u_N,..., u_1, u_0)</d-code> for <d-math>T</d-math> and <d-math>U</d-math>,
-        respectively, <d-math>T</d-math> and <d-math>U</d-math> can be broadcast together if the sizes of each of the
+        respectively, <d-math>T</d-math> and <d-math>U</d-math> can be broadcast together if the sizes of <em>each</em>
+        of the
         final <d-code language='python'>M + 1</d-code> dimensions of both tensors (all of the ones they have in common)
-        are equal to each other or at least one of the dimensions is of size one. That is for each
+        are equal to one other or at least one of the dimensions is a trivial, singleton dimension of size one. That is
+        for each
         <d-code language='python'>k</d-code> in
         <d-code language='python'>(0, 1, ..., M)</d-code>, at least one of the following must be true:
         <br>
@@ -245,7 +248,67 @@ as with /static as their root. E.g. <img src="/diagrams/fig1.png">
         When the above holds, <d-math>T</d-math> and <d-math>U</d-math> can be broadcast into a new tensor <d-math>V
         </d-math> which has <d-math>N+1</d-math> indices <d-math>V_{j_N\ldots j_{0}}</d-math>, like the larger tensor
         <d-math>U</d-math>, and is of shape
-        <d-code language='python'>(max(t_N, u_N), ..., max(t_1, u_1), max(t_0, u_0))</d-code>
+        <d-code language='python'>(u_N, ..., max(t_M, u_M), ..., max(t_0, u_0))</d-code>. For instance:
+        <d-code block='' language='python'>
+          t = torch.randn(5, 1, 3)
+          u = torch.randn(2, 1)
+          v = t + u # (5, 2, 3)-shaped
+        </d-code>
+        The components of <d-math>V</d-math> come from performing the infix operation between <d-math>T</d-math>
+        and <d-math>U</d-math> using the natural components of these latter tensors. That is, when <d-math>T</d-math>,
+        say, has an index which ranges over the same values as the corresponding index in <d-math>V
+        </d-math>, then the usual, non-trivial components of <d-math>T</d-math> are used. Otherwise, if the relevant
+        index in <d-math>T</d-math> is a trivial singleton index or is completely
+        missing (which is equivalent to inserting a dummy singleton index at the relevant location), then single value
+        of the tenor available at this index is used in the
+        computation for all values of the index in <d-math>V</d-math>. When a single value is used for multiple
+        components of <d-math>V</d-math>, one says that it has been <em>broadcast</em> across a larger dimension.
+        Analogous statements hold for <d-math>U</d-math>. In the
+        code example above, this works out as follows:
+        <d-math>V_{ijk}</d-math> is a three-dimensional, <d-code language='python'>(5, 2, 3)</d-code>-shaped tensor
+        whose components are
+        <d-math block=''>
+          V_{ijk} = T_{i0k} + U_{j0}\ .
+        </d-math>
+        There is not really any other reasonable way that we could have combined <d-math>T</d-math> and <d-math>U
+        </d-math> into a
+        <d-math>V</d-math>-shaped object. In general, one can think about broadcasting as first taking <d-math>T
+        </d-math> and <d-math>U</d-math>, inserting dummy singleton indexes into the smaller tensor until the two are of
+        the same dimension (<d-math>T_{i_M\ldots i_{0}}\longrightarrow T_{i_{N}\ldots i_{M+1}i_M\ldots i_{0}}</d-math>
+        in the present case, <d-math>i_k\in \{0\}</d-math> for <d-math>k > M</d-math>), broadcasting all singleton
+        dimensions in both tensors as needed, and then finally performing the relevant infix operation between the
+        now-properly-sized tensors.
+
+        <br>
+        <br>
+        A final example of when this is useful and how to translate index notation to vectorized code. Imagine that
+        <d-math>T_{im}</d-math> and <d-math>U_{jn}</d-math> are two
+        <d-code language='python'>(N, D)</d-code>-shaped tensors which each correspond to a collection of
+        <d-code language='python'>N</d-code> vectors (their first index) which are all
+        <d-code language='python'>D</d-code>-dimensional (their second index). If we wanted to get the
+        squared-differences between all such vectors, a <d-code language='python'>(N, N)</d-code>-shaped tensor
+        <d-math>V_{ij}</d-math>, we could write this in index form as
+        <d-math block=''>
+          V_{ij} = \sum_{m}\left(T_{im} - U_{jm}\right)^2 \ .
+        </d-math>
+        For the equivalent vectorized code computation, we first need to re-shape both tensors
+        (<d-code language='python'>t, u</d-code>) by inserting singleton dimensions so that their shapes can broadcast
+        to the desired output shape. This can be done in <d-code language='python'>pytorch</d-code> as in
+        <d-code language='python'>t.unsqueeze(dim)</d-code> to perform the insertion at dimension
+        <d-code language='python'>dim</d-code> or, alternatively, slice the
+        <d-code language='python'>Tensor</d-code> object with <d-code language='python'>None</d-code> inserted
+        in the appropriate location (both methods are shown below). After this re-shaping, it is a simple matter of
+        taking differences, squaring, and summing appropriately. Very explicitly:
+        <d-code block='' language='python'>
+          N, D = torch.randint(1, 100, (2,)) # Random choices of N, D.
+          t, u = torch.randn(N, D), torch.randn(N, D) # Both (N, D)shaped.
+          t = t.unsqueeze(dim=1) # (N, 1, D)-shaped.
+          u = u[None, ...] # (1, N, D)-shaped.
+          t_u_diff = t - u # (N, N, D)-shaped.
+          t_u_diff_squared = t_u_diff ** 2 # (N, N, D)-shaped.
+          v = t_u_diff_squared.sum(dim=-1) # (N, N)-shaped.
+        </d-code>
+
       </d-footnote>.
     </p>
 
