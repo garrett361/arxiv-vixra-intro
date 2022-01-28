@@ -162,7 +162,71 @@ as with /static as their root. E.g. <img src="/diagrams/fig1.png">
         In order to limit the scope of the project, most of the models focus on the (harder) problem of classifying
         papers based on <em>title</em> alone.
       </d-footnote>. Along the way, I also attempt to explain various ML and Data Science
-      concepts in my own words with the hope that others may find the explanations informative.
+      concepts in my own words with the hope that others may find the explanations informative, usually in the form of
+      (long) footnotes<d-footnote id='broadcasting'>
+        Here's an example: <em>broadcasting</em> and using <em>vectorized</em> code are some of the most important
+        practices for efficient ML work. Coming from physics, the tensor operations are also very bizarre looking,
+        initially (at least for me) and they took some getting used to. Below I explain broadcasting and other common
+        operations (in the language of <d-code language='python'>pytorch</d-code>) in the way I would have found helpful
+        when initially learning about them.
+
+        <br>
+        <br>
+        Broadcasting involves operations between tensors of different sizes, where a tensor is an array-like object
+        <d-math>T_{i_0 i_2\ldots i_N}</d-math> with indices spanning over possibly different values: <d-math>i_k\in\{0,
+          \ldots, D_{k}-1\}</d-math>. In <d-code language='python'>pytorch</d-code>, such a tensor would be an object
+        <d-code language='python'>t</d-code> which is said to be
+        <d-code language='python'>(D_0, D_1, ...., D_N)</d-code>-shaped. In
+        addition to the usual
+        matrix-multiplications and dot-products, in ML one often wants to do something like take a
+        <d-code language='python'>(r, c)</d-code>-shaped matrix and rescale all of the rows by the values contained in
+        an
+        <d-code language='python'>(c, )</d-code>-shaped vector. This is an uncommon operation in physics, where all
+        tensor manipulations tend to be invariant or co-variant under rotations (or other group transformations) of the
+        constituent tensors. An explicit, simple example with a matrix <d-math>m
+        </d-math> and
+        vector <d-math>v</d-math>
+        <d-math block=''>
+          m = \begin{pmatrix}
+          2 & 1 \\
+          0 & 2 \\
+          3 & 3
+          \end{pmatrix}\ , \quad v = \begin{pmatrix}
+          -1 \\
+          0 \\
+          4
+          \end{pmatrix}\quad \longrightarrow \quad m * v \equiv \begin{pmatrix}
+          -2 & -1 \\
+          0 & 0 \\
+          12 & 12
+          \end{pmatrix}\ ,
+        </d-math>
+        or in component form: <d-math>m_{ij}, v_{k} \longrightarrow \left(m*v\right)_{ij} \equiv m_{ij}v_{j}</d-math>.
+        Because the computations in each row can be performed simultaneously, such an operation can be implemented very
+        efficiently via parallelization. The corresponding <d-code language='python'>pytorch</d-code> code for the above
+        operation (using random entries instead of the preceding integers) is simply
+        <d-code block='' language='python'>
+          m = torch.randn(2, 3)
+          v = torch.randn(3)
+          mv = m * v
+        </d-code>
+
+        <br>
+        <br>
+        This type of broadcasting works with all of the usual infix operations
+        (<d-code language='python'>*, /, +, -</d-code>) and is allowed for tensors <d-math>T, Q</d-math>,
+        (<d-code language='python'>t, q</d-code> in code below) which satisfy the following criteria. Writing out the
+        indices, we take <d-math>
+          T_{i_M\ldots i_{0}}</d-math> to be <d-math>(M+1)</d-math>-dimensional and <d-math>Q_{j_N\ldots j_{0}}</d-math>
+        to be <d-math>(N+1)</d-math>-dimensional with <d-math>M \le N</d-math> (without loss of generality), where the
+        ordering of the index subscripts is reversed from usual conventions for reasons that will
+        soon become apparent.
+        Writing out the sizes of these dimensions in code notation as
+        <d-code language='python'>(T_M, ..., T_1, T_0)</d-code> and
+        <d-code language='python'>(Q_N,..., Q_1, Q_0)</d-code> for <d-math>T</d-math> and <d-math>Q</d-math>,
+        respectively.
+
+      </d-footnote>.
     </p>
 
 
