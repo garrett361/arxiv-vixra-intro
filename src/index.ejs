@@ -162,7 +162,8 @@ as with /static as their root. E.g. <img src="/diagrams/fig1.png">
         In order to limit the scope of the project, most of the models focus on the (harder) problem of classifying
         papers based on <em>title</em> alone.
       </d-footnote>. Along the way, I also attempt to explain various ML and Data Science
-      concepts in my own words with the hope that others may find the explanations informative, usually in the form of
+      concepts in my own words with the hope that others may find the explanations informative. These often take the
+      form of
       (long) footnotes<d-footnote id='broadcasting'>
         Here's an example: many common computations in ML are paralellized using <em>broadcasting</em> and
         <em>vectorized</em> code. These are some of the most important practices to develop for efficiency.
@@ -232,7 +233,7 @@ as with /static as their root. E.g. <img src="/diagrams/fig1.png">
         are equal to one other or at least one of the dimensions is a trivial, singleton dimension of size one. That is
         for each
         <d-code language='python'>k</d-code> in
-        <d-code language='python'>(0, 1, ..., M)</d-code>, at least one of the following must be true:
+        <d-code language='python'>(M, ..., 1, 0)</d-code>, at least one of the following must be true:
         <br>
         <br>
         A) <d-code language='python'>t_k == u_k</d-code>, so that the indices <d-math>i_k</d-math> and <d-math>j_k
@@ -259,10 +260,11 @@ as with /static as their root. E.g. <img src="/diagrams/fig1.png">
         say, has an index which ranges over the same values as the corresponding index in <d-math>V
         </d-math>, then the usual, non-trivial components of <d-math>T</d-math> are used. Otherwise, if the relevant
         index in <d-math>T</d-math> is a trivial singleton index or is completely
-        missing (which is equivalent to inserting a dummy singleton index at the relevant location), then single value
+        missing (which is equivalent to inserting a dummy singleton index at the relevant location), the single value
         of the tenor available at this index is used in the
         computation for all values of the index in <d-math>V</d-math>. When a single value is used for multiple
-        components of <d-math>V</d-math>, one says that it has been <em>broadcast</em> across a larger dimension.
+        components of <d-math>V</d-math> in this way, one says that it has been <em>broadcast</em> across a larger
+        dimension.
         Analogous statements hold for <d-math>U</d-math>. In the
         code example above, this works out as follows:
         <d-math>V_{ijk}</d-math> is a three-dimensional, <d-code language='python'>(5, 2, 3)</d-code>-shaped tensor
@@ -282,34 +284,41 @@ as with /static as their root. E.g. <img src="/diagrams/fig1.png">
         <br>
         <br>
         A final example of when this is useful and how to translate index notation to vectorized code. Imagine that
-        <d-math>T_{im}</d-math> and <d-math>U_{jn}</d-math> are two
-        <d-code language='python'>(N, D)</d-code>-shaped tensors which each correspond to a collection of
-        <d-code language='python'>N</d-code> vectors (their first index) which are all
-        <d-code language='python'>D</d-code>-dimensional (their second index). If we wanted to get the
-        squared-differences between all such vectors, a <d-code language='python'>(N, N)</d-code>-shaped tensor
+        <d-math>T_{ik}</d-math> is an <d-code language='python'>(M, D)</d-code>-shaped tensor corresponding to
+        <d-code language='python'>M</d-code> different vectors (<d-math>T</d-math>'s first index) which are each
+        <d-code language='python'>D</d-code>-dimensional (<d-math>T</d-math>'s second index) and <d-math>U_{jk}</d-math>
+        is a similar <d-code language='python'>(N, D)</d-code>-shaped tensor
+
+        . If we wanted to get the
+        squared-distances between all such vectors, a <d-code language='python'>(M, N)</d-code>-shaped tensor
         <d-math>V_{ij}</d-math>, we could write this in index form as
         <d-math block=''>
-          V_{ij} = \sum_{m}\left(T_{im} - U_{jm}\right)^2 \ .
+          V_{ij} = \sum_{k}\left(T_{ik} - U_{jk}\right)^2 \ .
         </d-math>
-        For the equivalent vectorized code computation, we first need to re-shape both tensors
-        (<d-code language='python'>t, u</d-code>) by inserting singleton dimensions so that their shapes can broadcast
-        to the desired output shape. This can be done in <d-code language='python'>pytorch</d-code> as in
+        In the equivalent vectorized code computation, we first need to re-shape both tensors so that the
+        length-<d-code language='python'>M</d-code> component of
+        <d-code language='python'>t</d-code> and length-<d-code language='python'>N</d-code> component of
+        <d-code language='python'>u</d-code> lie along independent dimensions,
+        allowing them to be broadcast together into
+        the desired output shape. The requisite singleton dimensions can be inserted in
+        <d-code language='python'>pytorch</d-code> as in
         <d-code language='python'>t.unsqueeze(dim)</d-code> to perform the insertion at dimension
-        <d-code language='python'>dim</d-code> or, alternatively, slice the
+        <d-code language='python'>dim</d-code> or, alternatively, by slicing the
         <d-code language='python'>Tensor</d-code> object with <d-code language='python'>None</d-code> inserted
-        in the appropriate location (both methods are shown below). After this re-shaping, it is a simple matter of
+        in the appropriate location. Both methods are shown below. After this re-shaping, it is a simple matter of
         taking differences, squaring, and summing appropriately. Very explicitly:
         <d-code block='' language='python'>
-          N, D = torch.randint(1, 100, (2,)) # Random choices of N, D.
-          t, u = torch.randn(N, D), torch.randn(N, D) # Both (N, D)shaped.
-          t = t.unsqueeze(dim=1) # (N, 1, D)-shaped.
+          M, N, D = torch.randint(1, 100, (3,)) # Random choices of M, N, D
+          t = torch.randn(M, D) # (M, D)shaped.
+          u = torch.randn(N, D) # (N, D)shaped.
+          t = t.unsqueeze(dim=1) # (M, 1, D)-shaped.
           u = u[None, ...] # (1, N, D)-shaped.
-          t_u_diff = t - u # (N, N, D)-shaped.
-          t_u_diff_squared = t_u_diff ** 2 # (N, N, D)-shaped.
-          v = t_u_diff_squared.sum(dim=-1) # (N, N)-shaped.
+          t_u_diff = t - u # (M, N, D)-shaped.
+          t_u_diff_squared = t_u_diff ** 2 # (M, N, D)-shaped.
+          v = t_u_diff_squared.sum(dim=-1) # (M, N)-shaped.
         </d-code>
 
-      </d-footnote>.
+      </d-footnote> to which more technical points are also relegated.
     </p>
 
 
